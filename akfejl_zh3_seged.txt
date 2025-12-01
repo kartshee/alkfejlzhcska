@@ -1,0 +1,65 @@
+asp.net core web app (m-v-c) //ilyen porojektet kell létrehozni
+
+Nugets: -Microsoft.EntityFrameworkCore 		9.0.10 //ezekkel a verziokkal fog mukodni
+	-Microsoft.EntityFrameworkCore.Sqlite   9.0.10
+	-Microsoft.EntityFrameworkCore.Tools	9.0.10
+	-Microsoft.EntityFrameworkCore.Design   9.0.10 // nem muszaly
+
+mappak letrehozasa: DB, Context
+
+context mappában:
+EFcontext megcsinalod --> optionsBuilder.UseSqlite("Data Source=.//DB//heroes.db");
+
+public class EFContext : DbContext
+{
+    public virtual DbSet<Kategoria> Kategoria { get; set; } //peldanyositas
+
+    public virtual DbSet<KisAllat> KisAllat { get; set; } //peldanyositas
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlite("Data Source=.//DB//allatok.db"); //elérési utvonal
+    }
+}
+
+program.cs:
+	bele kell rakni az app buildelese elott ezt: 
+	builder.Services.AddDbContext<EFContext>(); // oktinfen is fent van asp.net heroes fulon
+
+modell mappa:
+	modell osztaly
+
+Migracio:
+	miutan megvagy a model-lel és peldanyositod az EfContext-ben es a Program.cs-ben hozzaadod az Efcontextet
+
+	Tools -> NuGet package manager -> Package manager console
+
+	console-ra beírod:
+	Add-Migration "név"
+
+	Update-Database //ez utan a 2 parancs után letrehozza a tablat az adatbazisban és a view mappában a cshtml oldalt
+
+Controller -> New controller --> 3 kozul a legalso --> elnevezed valahogy
+	controller létrehozason belül:
+		Model class: adott model amin letrohzod
+		DbContext: EfContext
+		elvenezed, utana meg create 
+
+A letrehozott controllerrel nem kell csinalni semmit, kivéve ha kéri a feladat
+
+
+Shared mapában --> layout.cshtml
+Layout.cshtml:
+
+	lemasols egy elemet a nav-barban, aztan atírod hogy eltudd érni az új html oldalt amit legeneralt neked az studio:
+
+	<li class="nav-item">
+    		<a class="nav-link text-dark" asp-area="" asp-controller="a controller neve" asp-action="Index">'A cucc neve'</a>
+	</li>
+
+	//pl KisAllatsControllert hoz létre, de csak a KisAllats kell beleírni mert különben nem jó!
+	<li class="nav-item">
+    		<a class="nav-link text-dark" asp-area="" asp-controller="KisAllats" asp-action="Index">Kis Állatok</a>  
+	</li>
+
+5. feladata amikor rendezni kell akkor, Soha Pinyő videó, amelyik cuccunkat akarlyuk rendezni annak a controllerében kell matatni, és a view/index.cshtml fajlban
